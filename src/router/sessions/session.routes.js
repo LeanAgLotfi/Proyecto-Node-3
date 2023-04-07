@@ -1,14 +1,15 @@
 import Router  from 'express'
 import uploader from '../../utils/multer.middleware.js'
 import {sessionController} from  '../../controllers/session.controller.js'
-import passportCall from '../../middlewares/passport.middleware.js'
+import passportCall from '../../config/passport.cofing.js'
+
 
 const router = Router()
 
 router.post('/register',
-    uploader.single('file'),
-    passportCall('register', {failureRedirect: '/api/session/failRegister', failureFlash: true}),
-    (req, res)=>res.redirect('/login')
+    passportCall('jwt'),
+    // sessionController.register,
+    (req, res)=>res.redirect('/products')
 )
 
 router.get('/failRegister', (req,res)=>{
@@ -16,8 +17,8 @@ router.get('/failRegister', (req,res)=>{
 })
 
 router.post('/login', 
-    passportCall('login', {failureRedirect: '/api/session/failLogin'}),
-    sessionController.login
+    sessionController.login,
+    (req, res)=>res.redirect('/products')
 )
 
 router.get('/failLogin', (req,res)=>{
@@ -28,10 +29,11 @@ router.get('/github',
     passportCall('github', { scope: ['user:email'] })
 )
 
-// router.get('/github/callback',
-//     passportCall('github', {failureRedirect: '/api/session/failLogin'}),
-//     sessionController.loginGithub
-// )
+router.get(
+    '/github/callback',
+    passportCall('github', { failureRedirect: '/github-error' }),
+    sessionController.loginGitHub
+  );
 
 router.get('/logout', sessionController.logout)
 

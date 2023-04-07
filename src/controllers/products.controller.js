@@ -1,4 +1,4 @@
-import getDaos from "../model/daos/daos.factory.js";
+import {getDaos} from "../model/daos/daos.factory.js";
 import { apiSuccessResponse } from '../utils/api.utils.js';
 import ProductsServices from "../services/products.services.js";
 

@@ -9,7 +9,7 @@ import viewsRoutes from './router/view/view.routes.js'
 import handlebars from 'express-handlebars'
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import initializePassport from './config/passport.cofing.js'
+import {initializePassport} from './config/passport.cofing.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -25,8 +25,8 @@ app.set('view engine', 'handlebars');
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
 app.use(express.static(path.resolve(__dirname, 'src/public')))
-app.use(cookieParser())
 initializePassport()
+app.use(cookieParser())
 app.use(passport.initialize())
 
 //Routes

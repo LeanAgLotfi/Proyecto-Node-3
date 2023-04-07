@@ -2,14 +2,16 @@ import passport from 'passport'
 import local from 'passport-local'
 import github from 'passport-github2'
 import jwt from 'passport-jwt'
+
 import { createHash, isValidPassword } from '../utils/bcryp.utils.js'
-import getDaos from '../model/daos/daos.factory.js'
+import {getDaos} from '../model/daos/daos.factory.js'
 import { cookieExtractor } from '../utils/session.util.js'
-import { SECRET_KEY } from '../constants/sessionsKey.js'
 import ENV_CONFIG from './enviroment.config.js'
+import { USER_ROLES } from '../constants/userRoles.constants.js'
+import { HTTP_STATUS } from '../constants/api.constants.js'
 
 
-const { cartDao, userDao } = getDaos()
+const { cartsDao, usersDao } = getDaos()
 
 const LocalStrategy = local.Strategy
 const GithubStrategy = github.Strategy
@@ -17,7 +19,7 @@ const JwtStrategy = jwt.Strategy
 
 const ExtractJWT = jwt.ExtractJwt
 
-const initializePassport = () =>{
+export const initializePassport = () =>{
     //Local Register
     passport.use('register', new LocalStrategy(
         {
@@ -31,8 +33,8 @@ const initializePassport = () =>{
                 return done(null, false)
             }
             try {
-                const user = await userDao.getByEmail(username)
-                const cart = await cartDao.add()
+                const user = await usersDao.getByEmail(username)
+                const cart = await cartsDao.add()
                 if(user){
                     const message = 'User already exist'
                     console.log(message);
@@ -46,50 +48,21 @@ const initializePassport = () =>{
                     password: createHash(password),
                     cart: cart._id,
                 }
-                if(req.file){
-                    const paths = {
-                        path: req.file.path,
-                        originalName: req.file.originalname  
-                        }  
-                    newUser.profilePic = paths
-                } 
-                let result = await userDao.addUser(newUser)
-                return done(null, result)
+                let result = await usersDao.create(newUser)
+                const access_token = generateToken(result);
+                        res.cookie(ENV_CONFIG.SESSION_KEY, access_token, {
+                          maxAge: 60 * 60 * 60 * 24 * 1000,
+                          httpOnly: true
+                        });
+                        const response = apiSuccessResponse("User created in successfully!");
+                        console.log(response);
+                        return res.redirect('/products');
             } catch (error) {
                 return done('Error getting user: ' + error)
             }
         }
 
     )),
-
-    //Local Login
-    passport.use('login', new LocalStrategy(
-        {usernameField: 'email'},
-        async(username, password, done) =>{
-            try {
-                if(username === ENV_CONFIG.ADMIN_NAME && password === ENV_CONFIG.ADMIN_PASSWORD){
-                    const user = {
-                        firstName: 'Admin',
-                        lastName: 'Coder',
-                        email: ENV_CONFIG.ADMIN_NAME,
-                        password: ENV_CONFIG.ADMIN_PASSWORD,
-                        role: 'admin'
-                    }
-                    return done(null, user)
-                }
-                const user = await userDao.getByEmail(username)
-                if(!user){
-                    return done(null, false, 'user not found')
-                }
-                if(!isValidPassword(user, password)){
-                    return done(null, false, 'wrong user or password')
-                }
-                return done(null, user)
-            } catch (error) {
-                return done(error)
-            }
-        }
-    ))
 
     //Github Strategy
     passport.use(
@@ -98,22 +71,23 @@ const initializePassport = () =>{
             clientSecret: '132c834b8386c66fd58118575f9672025db833b1',
             callbackURL: 'http://localhost:8080/api/session/github/callback'
         },
-        async (accessToken, refreshToken, profile, done)=>{
+        async (_accessToken, _refreshToken, profile, done)=>{
             const userData = profile._json
             try {
-                const user = await userDao.getByEmail(userData.email)
+                const user = await usersDao.getByEmail(userData.email)
                 if(!user){
-                    const cart = await cartDao.add()
+                    const cart = await cartsDao.add()
                     const newUser = {
                         firstName: userData.name.split(' ')[0],
                         lastName: userData.name.split(' ')[1],
                         age: userData.age || 0,
-                        email: userData.email || ' ',
-                        password: ' ',
+                        email: userData.email,
+                        password: null,
+                        role: USER_ROLES.USER,
                         githubLogin: userData.login,
                         cart: cart._id
                     }
-                    const response = await userDao.addUser(newUser)
+                    const response = await usersDao.create(newUser)
                     const finalUser = response._doc
                     done(null, finalUser)
                     return
@@ -129,7 +103,7 @@ const initializePassport = () =>{
     // JWT
     passport.use('jwt', new JwtStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: SECRET_KEY
+        secretOrKey: ENV_CONFIG.SECRET_KEY
     }, async (jwt_payload, done) =>{
         try {
             return done(null, jwt_payload)
@@ -140,13 +114,33 @@ const initializePassport = () =>{
     ))
 }
 
+const passportCall = (strategy, options = {}) => {
+    return async (req, res, next) => {
+      await passport.authenticate(
+        strategy, 
+        { session: false, ...options }, 
+        (error, user, info) => {
+          if (error) {
+            return next(error);
+          }
+          if (!user) {
+            return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: info.messages ?? `${info}`})
+          }
+          req.user = user;
+          next();
+        }
+      )(req, res, next);
+    }
+}
+
+
 passport.serializeUser((user, done) => {
     done(null, user._id);
 });
   
 passport.deserializeUser(async (id, done) => {
-    const user = await userDao.getById(id)
+    const user = await usersDao.getById(id)
     done(null, user);
 });
 
-export default initializePassport
+export default passportCall;

@@ -1,5 +1,7 @@
-import getDaos from "../model/daos/daos.factory.js";
+import { HTTP_STATUS } from "../constants/api.constants.js";
+import {getDaos} from "../model/daos/daos.factory.js";
 import {apiSuccessResponse} from '../utils/api.utils.js'
+import { HttPError } from "../utils/error.js";
 
 const { usersDao } = getDaos();
 
@@ -7,9 +9,9 @@ class usersController{
 
     static async getAll(req,res,next){
         try{
-            const user = await usersDao.getAll()
-            const apiSuccess = apiSuccessResponse(user)
-            return res.status(200).json(apiSuccess)
+            const users = await usersDao.getAll()
+            const response = apiSuccessResponse(users)
+            return res.status(HTTP_STATUS.OK).json(response)
         }catch(error){
             next(error);
         }
@@ -20,36 +22,36 @@ class usersController{
         try{
             const userid = await usersDao.getById(uid)
             if(!userid){
-                throw new Error(404,'user not found')
+                throw new HttPError(HTTP_STATUS.NOT_FOUND,'user not found')
             }
             const response = apiSuccessResponse(userid)
-            return res.status(200).json(response)
+            return res.status(HTTP_STATUS.OK).json(response)
         }catch(error){
             next(error)
         }
     }
 
-    static async addUser(req, res, next){
+    static async create(req, res, next){
         const newUser = req.body;
         try{
-           const addUser = await usersDao.addUser(newUser);
+           const addUser = await usersDao.create(newUser);
            const response = apiSuccessResponse(addUser)
-           return res.status(201).json(response)
+           return res.status(HTTP_STATUS.CREATED).json(response)
         }catch(error){
             next(error);
         }
     }
 
-    static async updateUser(req, res, next){
+    static async updateById(req, res, next){
         const user = req.body
         const {uid} = req.params
         try{
-           const update = await usersDao.updateUser(uid, user)
+           const update = await usersDao.updateById(uid, user)
            if(!update){
-            throw new Error(404, 'user not found')
+            throw new HttPError(HTTP_STATUS.NOT_FOUND, 'user not found')
            }
            const response = apiSuccessResponse(update)
-           return res.status(200).json(response)
+           return res.status(HTTP_STATUS.OK).json(response)
                  
         }catch(error){
             next(error);
@@ -60,8 +62,11 @@ class usersController{
         const {uid} = req.params
         try{
             const deleteUser = usersDao.deleteUser(uid)
+            if (!deleteUser) {
+                throw new HttPError(HTTP_STATUS.NOT_FOUND, 'User not found');
+              }
             const response = apiSuccessResponse(deleteUser)
-            return res.status(200).json(response)
+            return res.status(HTTP_STATUS.OK).json(response)
           
         }catch(error){
             next(error)
@@ -71,3 +76,4 @@ class usersController{
 }
 
 export default usersController;
+

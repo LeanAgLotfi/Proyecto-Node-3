@@ -10,7 +10,7 @@ const router = Router()
 router.use('/products', productsRoutes)
 router.use('/carts', cartRoutes)
 router.use('/session', sessionRoutes)
-router.use('/users', userRoutes)
+router.use('/users', userRoutes.getRouter())
 router.use(errorMiddleware)
 
 export default router

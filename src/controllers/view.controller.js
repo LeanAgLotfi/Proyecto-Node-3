@@ -1,4 +1,4 @@
-import getDaos from "../model/daos/daos.factory.js";
+import {getDaos} from "../model/daos/daos.factory.js";
 
 const { productsDao, cartDao} = getDaos();
 

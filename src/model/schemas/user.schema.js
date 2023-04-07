@@ -1,14 +1,15 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { USER_ROLES } from "../../constants/userRoles.constants.js";
 
 const { Schema } = mongoose;
 export const userCollecion = 'user';
 
-const userSchema = new Schema({
+const userSchema = new Schema({    
 
     firstName:{
         type:String,
-        required:true
+        required: true
     },
     lastName:{
         type:String
@@ -26,21 +27,17 @@ const userSchema = new Schema({
     },
     githubLogin:{
         type:String,
-        unique:true
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: Object.values(USER_ROLES),
         default: 'user',
         required: true
     },
     cart:{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref:'cart',
         require:true
-    },
-    profilePic:{
-        type: Object
     }
 });
 

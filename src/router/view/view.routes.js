@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {vistasController} from '../../controllers/view.controller.js'
 import { sessionMiddleware} from'../../middlewares/session.middleware.js'
 import { authMiddleware } from '../../middlewares/auth.middleware.js'
-import passportCall from '../../middlewares/passport.middleware.js'
+import passportCall from '../../config/passport.cofing.js'
 
 const router = Router()
 
@@ -22,7 +22,6 @@ router.get('/login',
 
 router.get('/products',
     authMiddleware,
-    passportCall('jwt'),
     vistasController.products
 )
 

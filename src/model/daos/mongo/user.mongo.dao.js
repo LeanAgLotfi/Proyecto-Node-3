@@ -8,27 +8,28 @@ constructor(){
 }
 
     async getAll() {
-        const users = await userModel.find()
+        const { limit = 20, page = 1 } = filter;
+        const users = await userModel.paginate({}, { limit, page });
         return users
     }
 
     async getById(id){
-        const user = await userModel.findById(id).lean()
+        const user = await userModel.findById(id, { __v: false }).populate('cart').lean();
         return user
     }
 
     async getByEmail(email){
-        const user = await userModel.findOne({email: email}).lean()
+        const user = await userModel.findOne({ email }, { __v: false }).lean();
         return user
     }
 
-    async addUser(payload){
+    async create(payload){
         const newUser = await userModel.create(payload)
         console.log('New user created')
         return newUser
     }
 
-    async updateUser(id, payload){
+    async updateById(id, payload){
         const updatedUser = await userModel.findByIdAndUpdate((id, payload, { new: true }))
         console.log('User updated')
         return updatedUser

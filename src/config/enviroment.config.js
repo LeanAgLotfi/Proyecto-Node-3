@@ -9,7 +9,9 @@ const ENV_CONFIG = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     PERSISTENCE : process.env.PERSISTENCE || 'MONGO',
     ADMIN_NAME: process.env.ADMIN_NAME || '',
-    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || ''
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || '',
+    SECRET_KEY:process.env.SECRET_KEY,
+    SESSION_KEY: process.env.SESSION_KEY
 }
 
 export default ENV_CONFIG;
