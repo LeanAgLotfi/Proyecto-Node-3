@@ -14,3 +14,8 @@ export const cookieExtractor = (req) => {
   }
   return token;
 };
+
+export const generateRecoveringToken = (email) => {
+  const token = jwt.sign({email}, ENV_CONFIG.SECRET_KEY, { expiresIn: '1h' });
+  return token;
+};

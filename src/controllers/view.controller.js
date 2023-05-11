@@ -37,6 +37,14 @@ export class vistasController{
         }
     }
 
+    static async recover(req, res, next) {
+        res.render('recover', {
+            title: 'Recover your password',
+            styles: 'index.css'
+        })
+    }
+
+
     static async cart(req, res, next) {
         const cartId = req.params.cid 
         const user = req.user
@@ -44,7 +52,7 @@ export class vistasController{
             const cart = await cartDao.getById(cartId)
             res.render('cart', {
                 title: "Carrito de compras",
-                styles:"carrito.css",
+                styles:"index.css",
                 user,
                 cart
             })

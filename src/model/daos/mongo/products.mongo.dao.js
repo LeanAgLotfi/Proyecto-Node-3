@@ -8,7 +8,6 @@ export class ProductMongoDao {
         MongoManager.connect();
     }
     
-
     async getAll({limit, page, query, sort}) {
         let filter
         if(!query){

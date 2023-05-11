@@ -8,7 +8,6 @@ export class CartMongoDao {
         MongoManager.connect();
     }
     
-
     async getAll() {
         const carts = await cartModel.find()
         return carts

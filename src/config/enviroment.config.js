@@ -7,6 +7,8 @@ const ENV_CONFIG = {
     MONGO_URL: process.env.MONGO_URL || '',
     DATABASE : process.env.DATABASE,
     DB_PASSWORD: process.env.DB_PASSWORD,
+    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+    EMAIL: process.env.EMAIL,
     PERSISTENCE : process.env.PERSISTENCE || 'MONGO',
     ADMIN_NAME: process.env.ADMIN_NAME || '',
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || '',

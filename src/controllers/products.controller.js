@@ -1,6 +1,8 @@
 import {getDaos} from "../model/daos/daos.factory.js";
 import { apiSuccessResponse } from '../utils/api.utils.js';
 import ProductsServices from "../services/products.services.js";
+import { HTTP_STATUS } from "../constants/api.constants.js";
+import { HttPError } from "../utils/error.js";
 
 const productsServices = new ProductsServices();
 
@@ -11,7 +13,7 @@ class productController{
         try{
             const products = await productsServices.getProducts(filter)
             const response = apiSuccessResponse(products);
-            res.status(200).json(response);
+            res.status(HTTP_STATUS.OK).json(response);
         }catch(error){
             next(error);
         }
@@ -22,7 +24,7 @@ class productController{
         try{
             const product = await productsServices.getProductById(pid)
             const response = apiSuccessResponse({product})
-            res.status(200).json(response);
+            res.status(HTTP_STATUS.OK).json(response);
         }catch(error){
             next(error)
         }
@@ -34,7 +36,7 @@ class productController{
         try{
             const addProduct = await productsServices.createProduct(productPayload, files) //lo mismo aca
             const response = apiSuccessResponse(addProduct)
-            res.status(200).json(response)
+            res.status(HTTP_STATUS.OK).json(response)
         }catch(error){
             next(error)
         }
@@ -46,7 +48,7 @@ class productController{
         try{
             const updateProd = await productsServices.updateProduct(pid, productPayload)
             const response = apiSuccessResponse(updateProd)
-            res.status(200).json(response)
+            res.status(HTTP_STATUS.OK).json(response)
         }catch(error){
             next(error);
         }
@@ -57,7 +59,7 @@ class productController{
         try{
             const deleteProduct = await productsServices.deleteProduct(pid)
             const response = apiSuccessResponse(deleteProduct)
-            res.status(200).json(response)
+            res.status(HTTP_STATUS.OK).json(response)
         }catch(error){
             next(error)
         }
