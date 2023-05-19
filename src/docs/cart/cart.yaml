@@ -1,0 +1,61 @@
+paths:
+  /api/carts:
+    get:
+      tags:
+        - Cart
+      summary: Get All carts from DB
+      responses:
+        "200":
+            description: Cart fetched successfully from DB 
+        "500":
+            description: Internal Server Error
+    post:
+      tags:
+        - Cart
+      summary: Get All carts from DB
+      responses:
+        "200":
+            description: Cart fetched successfully from DB 
+        "500":
+            description: Internal Server Error
+  /api/carts/{cartId}:
+    get:
+      tags:
+        - Cart
+      summary: Get All carts from DB
+      responses:
+        "200":
+            description: Cart fetched successfully from DB 
+        "404":
+            description: Cart ID Not Found    
+        "500":
+            description: Internal Server Error
+    delete:
+      tags:
+        - Cart
+      summary: Get All carts from DB
+      responses:
+        "200":
+            description: Cart fetched successfully from DB 
+        "500":
+            description: Internal Server Error
+  /api/carts/{cartId}/product/{productId}:
+    put:
+      tags:
+        - Cart
+      summary: Get All carts from DB
+      responses:
+        "200":
+            description: Cart fetched successfully from DB 
+        "500":
+            description: Internal Server Error
+    delete:
+      tags:
+        - Cart
+      summary: Get All carts from DB
+      responses:
+        "200":
+            description: Cart fetched successfully from DB 
+        "500":
+            description: Internal Server Error
+

@@ -1,7 +1,7 @@
 import ENV_CONFIG from '../config/enviroment.config.js'
-import { gmailTransport } from '../config/mailer.config.js'
+import  gmailTransport  from '../config/mailer.config.js'
 import { generateRecoveringToken, cookieExtractor } from '../utils/session.util.js'
-import { jwt } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
 class MailController {
 

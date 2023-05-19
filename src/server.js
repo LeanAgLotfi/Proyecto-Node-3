@@ -10,7 +10,8 @@ import handlebars from 'express-handlebars'
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import {initializePassport} from './config/passport.cofing.js'
-
+import swaggerJSDoc from 'swagger-jsdoc';
+import {serve as swaggerServe, setup as swaggerSetup} from 'swagger-ui-express'
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import ENV_CONFIG from './config/enviroment.config.js';
@@ -21,6 +22,26 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'handlebars');
 
+
+const swaggerOptions = {
+  definition:{
+    openapi: '3.0.1',
+    info:{
+      title:'Ecommerce Lean',
+      description:'Un comercio online',
+      version:'1.0.0',
+      contact:{
+        name:'Leandro Lotfi',
+        email: 'aguslot19@gmail.com'
+      }
+    }
+  },
+  apis:[`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+
+
 //middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
@@ -30,6 +51,7 @@ app.use(cookieParser())
 app.use(passport.initialize())
 
 //Routes
+app.use('/api/doc', swaggerServe, swaggerSetup(specs))
 app.use('/api', apiRouter)
 app.use('/', viewsRoutes)
 

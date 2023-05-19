@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import ENV_CONFIG from './enviroment.config'
+import ENV_CONFIG from './enviroment.config.js'
 
 const gmailTransport = nodemailer.createTransport({
     service: 'gmail',
@@ -10,6 +10,4 @@ const gmailTransport = nodemailer.createTransport({
     }
 })
 
-module.exports = {
-    gmailTransport
-}
+export default gmailTransport
